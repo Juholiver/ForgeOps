@@ -87,6 +87,13 @@ export interface LatencyResponse {
   total_checks: number
 }
 
+export interface CheckHistoryResponse {
+  checks: CheckResult[]
+  total: number
+  page: number
+  page_size: number
+}
+
 export interface PaginatedResponse<T> {
   items: T[]
   total: number
