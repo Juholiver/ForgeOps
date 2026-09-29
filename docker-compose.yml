@@ -1,0 +1,23 @@
+# ForgeOps frontend stack (SPA served by nginx, same-origin /api proxy).
+# Requires the shared external network created by the backend repository:
+#   docker network inspect forgeops >/dev/null 2>&1 || docker network create forgeops
+#
+# Local dev (hot reload):  npm run dev   (see README)
+# Containerized:           docker compose up -d --build
+# Production:              docker compose -f docker-compose.yml -f docker-compose.prod.yml --env-file .env.prod up -d
+
+services:
+  frontend:
+    image: ${FRONTEND_IMAGE:-forgeops-frontend:local}
+    build:
+      context: .
+      args:
+        VITE_API_URL: ${VITE_API_URL:-/api}
+    ports:
+      - "80:80"
+    networks:
+      - forgeops
+
+networks:
+  forgeops:
+    external: true
