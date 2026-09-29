@@ -23,6 +23,7 @@ export function useCreateMonitor() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['monitors'] })
+      queryClient.invalidateQueries({ queryKey: ['dashboard-summary'] })
     },
   })
 }
@@ -34,8 +35,10 @@ export function useToggleMonitor() {
       const res = await api.post<Monitor>(`/monitors/${id}/toggle`)
       return res.data
     },
-    onSuccess: () => {
+    onSuccess: (_data, id) => {
       queryClient.invalidateQueries({ queryKey: ['monitors'] })
+      queryClient.invalidateQueries({ queryKey: ['monitor', id] })
+      queryClient.invalidateQueries({ queryKey: ['dashboard-summary'] })
     },
   })
 }
@@ -48,6 +51,7 @@ export function useDeleteMonitor() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['monitors'] })
+      queryClient.invalidateQueries({ queryKey: ['dashboard-summary'] })
     },
   })
 }

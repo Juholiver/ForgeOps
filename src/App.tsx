@@ -6,6 +6,7 @@ import { MonitorsPage } from './pages/MonitorsPage'
 import { DashboardPage } from './pages/DashboardPage'
 import { IncidentsPage } from './pages/IncidentsPage'
 import { Layout } from './components/Layout'
+import { MonitorDetailPage } from './pages/MonitorDetailPage'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -26,6 +27,7 @@ function App() {
             <Route element={<Layout />}>
               <Route path="/" element={<DashboardPage />} />
               <Route path="/monitors" element={<MonitorsPage />} />
+              <Route path="/monitors/:id" element={<MonitorDetailPage />} />
               <Route path="/incidents" element={<IncidentsPage />} />
             </Route>
             <Route path="*" element={<Navigate to="/" replace />} />
