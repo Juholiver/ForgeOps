@@ -1,7 +1,14 @@
 import axios from 'axios'
 import type { AxiosInstance } from 'axios'
 
-const API_URL = import.meta.env.VITE_API_URL || '/api'
+const API_URL = import.meta.env.VITE_API_URL
+
+if (!API_URL) {
+  throw new Error(
+    'VITE_API_URL is not defined. Copy .env.example to .env for local development, ' +
+      'or provide VITE_API_URL at build time (Docker build-arg / CI variable).',
+  )
+}
 
 export const api: AxiosInstance = axios.create({
   baseURL: API_URL,

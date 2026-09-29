@@ -6,6 +6,13 @@ COPY package.json package-lock.json ./
 RUN npm ci
 
 COPY . .
+
+# API base URL baked into the bundle at build time. The default /api matches
+# the same-origin proxy in the bundled nginx.conf; override it for
+# cross-origin APIs: docker build --build-arg VITE_API_URL=https://api.example.com .
+ARG VITE_API_URL=/api
+ENV VITE_API_URL=$VITE_API_URL
+
 RUN npm run build
 
 FROM nginx:alpine
