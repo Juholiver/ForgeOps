@@ -57,13 +57,13 @@ export function MonitorsPage() {
   useEffect(() => {
     if (state?.search !== undefined) setSearch(state.search)
     if (state?.openForm) setShowCreate(true)
-  }, [location.key])
+  }, [location.key, state])
 
   useEffect(() => {
     setPage(1)
   }, [search, statusFilter, methodFilter])
 
-  const items = data?.items ?? []
+  const items = useMemo(() => data?.items ?? [], [data])
   const activeCount = items.filter((m) => m.active).length
 
   const filtered = useMemo(() => {
