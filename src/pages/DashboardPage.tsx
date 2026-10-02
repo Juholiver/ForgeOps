@@ -49,7 +49,7 @@ export function DashboardPage() {
               <AlertTriangle size={28} />
             </div>
             <p className="empty-state__title">Erro ao carregar o dashboard</p>
-            <p className="empty-state__text">Não foi possível obter o resumo. Verifique a conexão com a API.</p>
+            <p className="empty-state__text">Não foi possível obter o resumo local.</p>
             <button type="button" className="btn btn--primary" onClick={handleRefresh}>
               <RefreshCw size={16} />
               Tentar novamente

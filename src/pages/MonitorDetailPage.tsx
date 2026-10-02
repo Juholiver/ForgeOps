@@ -171,7 +171,7 @@ export function MonitorDetailPage() {
             {runCheck.isError ? (
               <div className="alert alert--error">
                 <AlertTriangle size={16} />
-                Falha ao executar o check. Verifique se o backend está disponível.
+                Falha ao executar o check. Tente novamente em instantes.
               </div>
             ) : lastRun && (
               <div

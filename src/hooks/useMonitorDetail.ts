@@ -1,16 +1,12 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { api } from '../services/api'
-import type { CheckResult, Monitor, UptimeResponse, LatencyResponse } from '../types'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { runHealthCheck } from '../lib/healthCheck'
+import { getLatency, getMonitor, getUptime, recordCheck } from '../services/storage'
+import type { CheckResult, LatencyResponse, Monitor, UptimeResponse } from '../types'
 
 export function useUptime(monitorId: string, days = 7) {
   return useQuery({
     queryKey: ['uptime', monitorId, days],
-    queryFn: async () => {
-      const res = await api.get<UptimeResponse>(`/dashboard/uptime/${monitorId}`, {
-        params: { days },
-      })
-      return res.data
-    },
+    queryFn: (): UptimeResponse => getUptime(monitorId, days),
     enabled: !!monitorId,
   })
 }
@@ -18,12 +14,7 @@ export function useUptime(monitorId: string, days = 7) {
 export function useLatency(monitorId: string, days = 7) {
   return useQuery({
     queryKey: ['latency', monitorId, days],
-    queryFn: async () => {
-      const res = await api.get<LatencyResponse>(`/dashboard/latency/${monitorId}`, {
-        params: { days },
-      })
-      return res.data
-    },
+    queryFn: (): LatencyResponse => getLatency(monitorId, days),
     enabled: !!monitorId,
   })
 }
@@ -31,10 +22,7 @@ export function useLatency(monitorId: string, days = 7) {
 export function useMonitor(monitorId: string) {
   return useQuery({
     queryKey: ['monitor', monitorId],
-    queryFn: async () => {
-      const res = await api.get<Monitor>(`/monitors/${monitorId}`)
-      return res.data
-    },
+    queryFn: (): Monitor | null => getMonitor(monitorId) ?? null,
     enabled: !!monitorId,
   })
 }
@@ -42,9 +30,12 @@ export function useMonitor(monitorId: string) {
 export function useRunCheck() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: async (monitorId: string) => {
-      const res = await api.post<CheckResult>(`/health-check/${monitorId}`)
-      return res.data
+    mutationFn: async (monitorId: string): Promise<CheckResult> => {
+      const monitor = getMonitor(monitorId)
+      if (!monitor) throw new Error('Monitor não encontrado')
+      const check = await runHealthCheck(monitor)
+      recordCheck(check)
+      return check
     },
     onSuccess: (_data, monitorId) => {
       queryClient.invalidateQueries({ queryKey: ['check-history', monitorId] })
@@ -52,6 +43,8 @@ export function useRunCheck() {
       queryClient.invalidateQueries({ queryKey: ['uptime', monitorId] })
       queryClient.invalidateQueries({ queryKey: ['latency', monitorId] })
       queryClient.invalidateQueries({ queryKey: ['monitor', monitorId] })
+      queryClient.invalidateQueries({ queryKey: ['incidents'] })
+      queryClient.invalidateQueries({ queryKey: ['dashboard-incidents'] })
     },
   })
 }

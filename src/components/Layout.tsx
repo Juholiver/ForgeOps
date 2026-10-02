@@ -1,36 +1,27 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom'
 import {
-  Activity,
   AlertTriangle,
   Bell,
-  ChevronDown,
   Flame,
   LayoutDashboard,
-  LogOut,
   Menu,
   Monitor as MonitorIcon,
   Search,
   X,
 } from 'lucide-react'
-import { useAuth } from '../context/AuthContext'
+import { useAutoChecks } from '../hooks/useAutoChecks'
 import { useIncidents } from '../hooks/useIncidents'
-import { formatRelative, getInitials, shortId } from '../lib/format'
-
-const ROLE_LABEL: Record<string, string> = {
-  admin: 'Administrador',
-  viewer: 'Visualizador',
-}
+import { formatRelative, shortId } from '../lib/format'
 
 export function Layout() {
-  const { user, logout } = useAuth()
+  useAutoChecks()
   const navigate = useNavigate()
   const { data: incidents } = useIncidents(1, 6)
 
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [search, setSearch] = useState('')
   const [bellOpen, setBellOpen] = useState(false)
-  const [userOpen, setUserOpen] = useState(false)
   const searchRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
@@ -44,22 +35,11 @@ export function Layout() {
     return () => document.removeEventListener('keydown', onKey)
   }, [])
 
-  const closeMenus = () => {
-    setBellOpen(false)
-    setUserOpen(false)
-  }
-
   const handleSearch = (e: FormEvent) => {
     e.preventDefault()
-    closeMenus()
+    setBellOpen(false)
     setSidebarOpen(false)
     navigate('/monitors', { state: { search } })
-  }
-
-  const handleLogout = () => {
-    closeMenus()
-    logout()
-    navigate('/login')
   }
 
   const openIncidents = incidents?.items.filter((i) => i.status !== 'resolved') ?? []
@@ -162,10 +142,7 @@ export function Layout() {
                 className="icon-btn"
                 aria-label="Notificações de incidentes"
                 aria-expanded={bellOpen}
-                onClick={() => {
-                  setBellOpen(!bellOpen)
-                  setUserOpen(false)
-                }}
+                onClick={() => setBellOpen(!bellOpen)}
               >
                 <Bell size={19} />
                 {openIncidents.length > 0 && <span className="icon-btn__dot" />}
@@ -206,47 +183,10 @@ export function Layout() {
                 </div>
               )}
             </div>
-
-            <div className="user-menu">
-              <button
-                type="button"
-                className="user-menu__trigger"
-                aria-expanded={userOpen}
-                onClick={() => {
-                  setUserOpen(!userOpen)
-                  setBellOpen(false)
-                }}
-              >
-                <span className="avatar" aria-hidden="true">
-                  {user ? getInitials(user.name) : '?'}
-                </span>
-                <span className="user-menu__meta">
-                  <span className="user-menu__name">{user?.name ?? '—'}</span>
-                  <span className="user-menu__role">{user ? ROLE_LABEL[user.role] ?? user.role : ''}</span>
-                </span>
-                <ChevronDown size={16} className="user-menu__chevron" />
-              </button>
-              {userOpen && (
-                <div className="dropdown">
-                  <div className="dropdown__header">
-                    <span>{user?.email}</span>
-                  </div>
-                  <button type="button" className="dropdown__item" onClick={() => { setUserOpen(false); navigate('/') }}>
-                    <Activity size={16} />
-                    Meu dashboard
-                  </button>
-                  <div className="dropdown__sep" />
-                  <button type="button" className="dropdown__item dropdown__item--danger" onClick={handleLogout}>
-                    <LogOut size={16} />
-                    Sair da conta
-                  </button>
-                </div>
-              )}
-            </div>
           </div>
         </header>
 
-        {(bellOpen || userOpen) && <div className="dropdown-backdrop" onClick={closeMenus} />}
+        {bellOpen && <div className="dropdown-backdrop" onClick={() => setBellOpen(false)} />}
 
         <main className="content" id="main-content">
           <Outlet />

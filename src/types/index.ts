@@ -1,12 +1,3 @@
-export interface User {
-  id: string
-  name: string
-  email: string
-  role: 'admin' | 'viewer'
-  is_active: boolean
-  created_at: string
-}
-
 export interface Monitor {
   id: string
   name: string
@@ -99,10 +90,4 @@ export interface PaginatedResponse<T> {
   total: number
   page: number
   page_size: number
-}
-
-export interface TokenResponse {
-  access_token: string
-  refresh_token: string
-  token_type: string
 }
