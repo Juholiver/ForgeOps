@@ -5,7 +5,7 @@ node_modules/
 dist/
 *.tsbuildinfo
 
-# Environment files (only .env.example is tracked)
+# Environment files (nenhum é usado hoje; .env nunca vai para o repositório)
 .env
 .env.local
 .env.*.local
