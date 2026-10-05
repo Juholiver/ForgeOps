@@ -1,10 +1,13 @@
 import { useQuery } from '@tanstack/react-query'
-import { getDashboardSummary } from '../services/storage'
+import { api } from '../services/api'
 import type { DashboardSummary } from '../types'
 
 export function useDashboardSummary() {
   return useQuery({
     queryKey: ['dashboard-summary'],
-    queryFn: (): DashboardSummary => getDashboardSummary(),
+    queryFn: async () => {
+      const res = await api.get<DashboardSummary>('/dashboard/summary')
+      return res.data
+    },
   })
 }

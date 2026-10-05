@@ -10,12 +10,10 @@ import {
   Search,
   X,
 } from 'lucide-react'
-import { useAutoChecks } from '../hooks/useAutoChecks'
 import { useIncidents } from '../hooks/useIncidents'
 import { formatRelative, shortId } from '../lib/format'
 
 export function Layout() {
-  useAutoChecks()
   const navigate = useNavigate()
   const { data: incidents } = useIncidents(1, 6)
 
