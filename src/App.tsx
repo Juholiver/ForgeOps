@@ -5,6 +5,9 @@ import { DashboardPage } from './pages/DashboardPage'
 import { IncidentsPage } from './pages/IncidentsPage'
 import { Layout } from './components/Layout'
 import { MonitorDetailPage } from './pages/MonitorDetailPage'
+import { AuthProvider } from './context/AuthContext'
+import { LoginPage } from './pages/LoginPage'
+import { AuthCallbackPage } from './pages/AuthCallbackPage'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -19,15 +22,19 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
-        <Routes>
-          <Route element={<Layout />}>
-            <Route path="/" element={<DashboardPage />} />
-            <Route path="/monitors" element={<MonitorsPage />} />
-            <Route path="/monitors/:id" element={<MonitorDetailPage />} />
-            <Route path="/incidents" element={<IncidentsPage />} />
-          </Route>
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
+        <AuthProvider>
+          <Routes>
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/auth/callback" element={<AuthCallbackPage />} />
+            <Route element={<Layout />}>
+              <Route path="/" element={<DashboardPage />} />
+              <Route path="/monitors" element={<MonitorsPage />} />
+              <Route path="/monitors/:id" element={<MonitorDetailPage />} />
+              <Route path="/incidents" element={<IncidentsPage />} />
+            </Route>
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </AuthProvider>
       </BrowserRouter>
     </QueryClientProvider>
   )
