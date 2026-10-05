@@ -8,6 +8,7 @@ import { MonitorDetailPage } from './pages/MonitorDetailPage'
 import { AuthProvider } from './context/AuthContext'
 import { LoginPage } from './pages/LoginPage'
 import { AuthCallbackPage } from './pages/AuthCallbackPage'
+import { ProtectedRoute } from './components/ProtectedRoute'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -26,7 +27,13 @@ function App() {
           <Routes>
             <Route path="/login" element={<LoginPage />} />
             <Route path="/auth/callback" element={<AuthCallbackPage />} />
-            <Route element={<Layout />}>
+            <Route
+              element={
+                <ProtectedRoute>
+                  <Layout />
+                </ProtectedRoute>
+              }
+            >
               <Route path="/" element={<DashboardPage />} />
               <Route path="/monitors" element={<MonitorsPage />} />
               <Route path="/monitors/:id" element={<MonitorDetailPage />} />
