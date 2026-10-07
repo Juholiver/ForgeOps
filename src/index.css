@@ -721,7 +721,7 @@ textarea {
 .dropdown-backdrop {
   position: fixed;
   inset: 0;
-  z-index: 70;
+  z-index: 40;
   background: transparent;
 }
 
